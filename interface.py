@@ -1,3 +1,8 @@
+# Kellan Yamamoto
+# 28388886
+# kellany@uci.edu
+# Modified from given code
+
 import tkinter as tk
 from tkinter import ttk, filedialog
 from typing import Text
