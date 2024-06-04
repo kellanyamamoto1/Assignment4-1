@@ -11,191 +11,384 @@ UI for all commands passed through the Admin and User Modules
 # Kellan Yamamoto
 # kellany@uci.edu
 # 28388886
-
-import pathlib
 from pathlib import Path
+import user as user_mod
 from Profile import Profile, Post
 from ds_client import send
 import admin
-import user
+import ui
+import a4
 
-SERVER_ADDRESS = "168.235.86.101"
-SERVER_PORT = "3021"
-ADMINISTRATOR = False
+
+server_adress = "168.235.86.101"
+server_port = "3021"
+administrator = False
 temp_path = ''
 
-COMMAND_LIST = """
-Q -- Quit the program
-C -- Create a new file in a specified path
-D -- Deleted a file
-R -- Read a file
-O -- Open a file
-E -- Edit a file
-P -- Print a file
-*To edit or print the contents of a file, you must
-    open it first using the O command
-(Syntax - 'O [path]' inlcuding the file and extension)
-*If user, use syntax:[COMMAND] [[-]OPTION]")
-"""
+
+def start():
+    ui.administration(1)
+    ui.handle_command()
 
 
-def commands():
-    """
-    List of commands that runs whenever the program starts
-    """
-    print(COMMAND_LIST)
-    user_input = input("Input command with path and desired file: ").split(" ")
-    command = user_input[0]
-    directory = user_input[1] if len(user_input) > 1 else None
-
-    if command == "admin":
-        admin.start()
-    else:
-        if command == 'Q':
-            print("Quitting the program.")
-            quit()
-        elif command == 'R':
-            if directory:
-                read_file(user_input)
-            else:
-                print("ERROR")
-        elif command == 'C':
-            create_file(user_input)
-        elif command == 'D':
-            delete_file(directory)
-        elif command == 'O':
-            open_file(user_input)
-        elif command == 'E':
-            edit_file(" ".join(user_input))
-        elif command == 'P':
-            print_file_data(" ".join(user_input))
-
-
-def user_check():
-    """
-    Function that will run immediately after program initialized
-    will ask if person is user or admin and sort accordingly
-    """
-
-    user_type = input("admin or user?: ")
+def user():
+    global administrator
+    user_type = input("Please input user type (\"admin\", \"user\"):  ")
     temp = 0
-    if user_type == "admin":
+    if user_type == 'admin':
         temp = 1
+        administrator = True
     else:
         temp = 0
+        administrator = False
     return temp
 
 
-def adminis(num):
-    """
-    Function will check if person is admin or not
-    """
-    global ADMINISTRATOR
-    if num == 1:
-        ADMINISTRATOR = True
+def administration(a):
+    global administrator
+    if a == 1:
+        administrator = True
     else:
-        ADMINISTRATOR = False
-    return ADMINISTRATOR
+        administrator = False
+    return administrator
 
 
-def get_path():
-    """
-    get path function for user path
-    """
-    print("Please enter a path")
-    path = input()
-    path = path + '\\'
-    return path
+def handle_command():
+    command = input("please enter command:  ")
+    command_type = command[0:1]
+    if command == 'admin':
+        admin.start()
+    elif command == 'user':
+        administrator == 0
+        user()
+        handle_command()
+    else:
+        if command_type == "L":
+            list_files_command(command)
+        elif command_type == "Q":
+            quit()
+        elif command_type == "C":
+            create_file(command)
+            handle_command()
+        elif command_type == "D":
+            del_file(command)
+        elif command_type == "R":
+            read_file(command)
+        elif command_type == "H":
+            user_mod.comm_list()
+            handle_command()
+        elif command_type == "O":
+            open_file(command)
+            handle_command()
+        elif command_type == 'E':
+            edit_file(command)
+        elif command_type == "P":
+            print_data(command)
 
 
-def file_name():
-    '''
-    user function to ask for file name
-    '''
-    name = input("Please enter a file name without file extenstion:")
-    return name
+def file_sort(a, b):
+    temp = [f for f in a if Path(b, f).is_file()]
+    return temp
 
 
-def open_file(user_input):
-    '''
-    Function to open file, used to edit and print file contents
-    '''
+def dir(pathlib_path, path):
+    temp = []
+    fol = Path(path)
+    for item in fol.iterdir():
+        if item.is_dir():
+            temp.append(item)
+    return temp
+
+
+def list_files(a):
+    if administrator:
+        paths = a.split(' ')
+        if len(paths) > 1:
+            path = paths[1]
+            recursive = "-r" in paths[2:]
+            files_only = "-f" in paths[2:]
+            search_file = None
+            if "-s" in paths[2:]:
+                s_index = paths.index("-s")
+                if s_index + 1 < len(paths):
+                    search_file = paths[s_index + 1]
+            ending = None
+            if "-e" in paths[2:]:
+                e_index = paths.index("-e")
+                if e_index + 1 < len(paths):
+                    ending = paths[e_index + 1]
+            list_items(path, recursive, files_only, search_file, ending)
+        else:
+            if administrator:
+                print("please enter a valid path")
+                handle_command()
+            else:
+                user_mod.path_help()
+    else:
+        path = user_mod.get_path()
+        recursive = user_mod.recursive()
+        files_only = user_mod.files()
+        ending = user_mod.ending()
+        search_file = user_mod.search()
+        print("OUTPUT:\n")
+        list_items(path, recursive, files_only, search_file, ending)
+
+
+def list_files_command(command):
+    command_parts = command.split()
+    paths = command_parts[1:]
+    path = paths[0]
+    recursive = "-r" in paths
+    files_only = "-f" in paths
+    search_file = None
+    if "-s" in paths:
+        s_index = paths.index("-s")
+        if s_index + 1 < len(paths):
+            search_file = paths[s_index + 1]
+    ending = None
+    if "-e" in paths:
+        e_index = paths.index("-e")
+        if e_index + 1 < len(paths):
+            ending = paths[e_index + 1]
+    list_items(path, recursive, files_only, search_file, ending)
+
+
+def list_items(
+        path,
+        recursive=False,
+        files_only=False,
+        search_file=None,
+        ending=None):
+    try:
+        l = Path(path).iterdir()
+
+        files = file_sort(l, path)
+        dirs = dir(l, path)
+
+        for file in files:
+            file_name, file_extension = file.stem, file.suffix
+            file_extension = file_extension[1::]
+            if search_file is None or search_file == file_name:
+                if ending is None or file_extension.lower() == ending.lower():
+                    print(file)
+
+        if recursive:
+            for directory in dirs:
+                if not files_only and directory.is_dir():
+                    if ending is not None:
+                        list_items(
+                            directory,
+                            recursive,
+                            files_only,
+                            search_file,
+                            ending)
+                    else:
+                        print(directory)
+                        list_items(
+                            directory,
+                            recursive,
+                            files_only,
+                            search_file,
+                            ending)
+                elif files_only and directory.is_dir():
+                    list_items(
+                        directory,
+                        recursive,
+                        files_only,
+                        search_file,
+                        ending)
+        elif not files_only and ending is None:
+            for directory in dirs:
+                print(directory)
+    except FileNotFoundError:
+        print(f"the path {path} doesnt exist")
+    handle_command()
+
+
+def create_file(a):
     global temp_path
-    if ADMINISTRATOR:
-        temp_path = user_input[1]
-        f = open(temp_path, 'a')
-        print(temp_path + " has been opened as administrator")
+    if administrator:
+        paths = a.split(' ')
+        if len(paths) > 1:
+            path = paths[1]
+            if '-n' in paths[2:]:
+                n_index = paths.index('-n')
+                temp = n_index + 1
+                file_name = paths[temp]
+                file_ext = file_name + '.dsu'
+                filepath = Path(path) / file_ext
+                username = None
+                password = None
+                bio = None
+                profile = Profile(
+                    username=username, password=password, bio=bio)
+                with open(filepath, 'a') as f:
+                    print("")
+                f = open(filepath, 'a')
+                profile.save_profile(path=filepath)
+                print(f'{filepath} OPENED')
+                temp_path = filepath
+        print(f"TEMP PATH:  {temp_path}")
+        return temp_path
     else:
-        path = get_path()
-        name = file_name()
-        temp_path = path + name + '.dsu'
-        f = open(temp_path, 'r+')
-        print(temp_path + ' Has been opened')
-        for line in f:
-            print("File Opened: ")
-            print(line.strip())
-    commands()
+        file_path = user_mod.get_path()
+        file_name = user_mod.file_name()
+        line = file_path + "\\" + file_name
+        username = input("Enter Username:  ")
+        password = input("Enter Password:  ")
+        bio = input("Enter bio: ")
+        profile = Profile(username=username, password=password, bio=bio)
+        print(line + "      CREATED")
+        with open(line, 'a') as f:
+            a = "Username: " + username + '\n'
+            f.write(a)
+            b = "Password: " + password + '\n'
+            f.write(b)
+            c = "Bio: " + bio + '\n'
+            f.write(c)
+        profile.save_profile(path=line)
+        f = open(line, 'a')
+        temp_path = file_path
+    print(f'{file_path} OPENED')
+    print(f"path: {file_path}")
     return temp_path
 
 
-def edit_file(user_input):
-    '''
-    Function to edit file after it has been opened
-    '''
-    print("To use 'E', use syntax: 'E [-]OPTION] [INPUT] ")
-    if ADMINISTRATOR:
-        lisp = user_input.split(' ')
-        bio_index = lisp.find('-bio')
+def check_file(a):
+    if Path(a).exists():
+        return True
+    else:
+        return False
+
+
+def del_file(a):
+    if administrator:
+        paths = a.split(' ')
+        path = paths[1]
+        if path[-3:] == 'dsu':
+            if check_file(path):
+                Path(path).unlink()
+                print(f"{path} DELETED")
+            elif not check_file(path):
+                print("no such file exists")
+        else:
+            print("can only delete dsu files")
+    else:
+        path = user_mod.get_path()
+        if path[-3:] == 'dsu':
+            if check_file(path):
+                Path(path).unlink()
+                print(f"{path} DELETED")
+            elif not check_file(path):
+                print("no file exists")
+        else:
+            print("can only delete dsu files")
+
+    handle_command()
+
+
+def read_file(a):
+    if administrator:
+        paths = a.split(' ')
+        path = paths[1]
+        if path[-3:] == 'dsu':
+            if check_file(path):
+                with open(path, 'r') as p:
+                    l = p.readlines()
+                    if len(l) > 0:
+                        for i in l:
+                            print(i, end='')
+                    else:
+                        print("EMPTY")
+            elif not check_file(path):
+                print("no such file exists")
+        print("")
+    else:
+        path = user_mod.get_path()
+        if path[-3:] == 'dsu':
+            if check_file(path):
+                with open(path, 'r') as p:
+                    l = p.readlines()
+                    if len(l) > 0:
+                        for i in l:
+                            print(i, end='')
+                    else:
+                        print("EMPTY")
+            elif not check_file(path):
+                print("no file exists")
+        else:
+            print("please enter a file with \".dsu\" extention")
+    print("")
+    handle_command()
+
+
+def open_file(a):
+    global temp_path
+    if administrator:
+        path = a.split(' ')
+        temp_path = path[1]
+        f = open(temp_path, 'a')
+        print(temp_path + " opened")
+        return temp_path
+    else:
+        path = user_mod.get_path()
+        print("Without the file extention,")
+        name = user_mod.file_name()
+        temp_path = path + "\\" + name
+        f = open(temp_path, 'r+')
+        print(temp_path + ' opened')
+        for line in f:
+            print(" ")
+            print(line.strip())
+    handle_command()
+    return temp_path
+
+
+def edit_file(a):
+    if administrator:
+        lis = a.split(' ')
+        bio_index = a.find('-bio')
         bio = ''
         if bio_index != -1:
-            start_quote = user_input.find('"', bio_index)
-            end_quote = user_input.find('"', start_quote + 1)
+            start_quote = a.find('"', bio_index)
+            end_quote = a.find('"', start_quote + 1)
             if start_quote != -1 and end_quote != -1:
-                bio = user_input[start_quote + 1:end_quote]
+                bio = a[start_quote + 1:end_quote]
 
         profile = Profile()
         profile.load_profile(path=temp_path)
 
-        if '-usr' in lisp:
-            usr_index = lisp.index('-usr')
-            new_usr = ' '.join(lisp[usr_index + 1:]).strip('"')
+        if '-user' in lis:
+            usr_index = lis.index('-user')
+            new_usr = ' '.join(lis[usr_index + 1:]).strip('"')
             profile.username = new_usr
             profile.save_profile(temp_path)
-            print("username updated")
-        if '-pwd' in lisp:
-            pwd_index = lisp.index('-pwd')
-            new_pwd = lisp[pwd_index + 1]
-            profile.password = new_pwd.strip('"')
-            profile.save_profile(temp_path)
-            print("password updated")
-        if '-bio' in lisp:
-            profile.bio = bio.strip('"')
-            profile.save_profile(path=temp_path)
-            print("bio updated")
-        if '-addpost' in lisp:
-            post_index = lisp.index('-addpost')
-            post_content = ' '.join(lisp[post_index + 1:])
+        if '-addpost' in lis:
+            post_index = lis.index('-addpost')
+            post_content = ' '.join(lis[post_index + 1:])
             new_post = Post(post_content)
             profile.add_post(new_post)
             profile.save_profile(temp_path)
-            print("post added")
-        if '-delpost' in lisp:
-            del_index = lisp.index('-delpost')
-            del_content = ''.join(lisp[del_index + 1:])
-            profile.del_post(del_content)
-            print("Post Deleted")
+        if '-pwd' in lis:
+            pwd_index = lis.index('-pwd')
+            new_pwd = lis[pwd_index + 1]
+            profile.password = new_pwd.strip('"')
+            profile.save_profile(temp_path)
+        if '-bio' in lis:
+            profile.bio = bio.strip('"')
+            profile.save_profile(temp_path)
     else:
         profile = Profile()
-        print("Enter a dsu file path with file name and extension:")
+        print("please enter a dsu file path")
         temp_path = input()
         profile.load_profile(path=temp_path)
         print("what would you like to edit?")
-        print("\"-usr\" to update the username")
+        print("\"-user\" to update the username")
         print("\"-pwd\" to update password")
         print("\"-bio\" to update bio")
         print("\"-addpost\" to add a post")
         user_in = str(input())
-        if "-usr" in user_in:
+        if "-user" in user_in:
             new = str(input("enter new username: "))
             profile.username = new
             profile.save_profile(temp_path)
@@ -209,27 +402,43 @@ def edit_file(user_input):
             profile.save_profile(temp_path)
         elif "-addpost" in user_in:
             post_content = input("Enter new post: ")
+            if "@W" in post_content or "@w" in post_content:
+                zipc = input("Enter Zipcode: ")
+                cc = input("Enter Country Code: ")
+                Fire = WEA.OpenWeather(zipc, cc)
+                Fire.set_apikey("ceb8cbc931c2f41301ba4a1548020fd4")
+                Fire.load_data()
+                post_content = Fire.transclude(post_content)
+            if "@L" in post_content or "@l" in post_content:
+                alb = input("Enter Album Song Album: ")
+                art = input("Enter Artist: ")
+                Water = LFM.LastFM()
+                Water.set_artist_album(art, alb)
+                Water.setFMapi("7cd2ee13dc3b0100dae94c5c7401df50")
+                Water.loadFMdata()
+                # print(Water.loadFMdata())
+                post_content = Water.transclude(post_content)
+
             new_post = Post(post_content)
             profile.add_post(new_post)
             profile.save_profile(temp_path)
             temp = input("would you like to post this on a server?  Y/N:    ")
             if temp == "Y":
-                serv = input("please input a server ip address:   ")
+                serv = input("please input a server:   ")
                 port = 3021
                 username = profile.username
                 password = profile.password
                 message = post_content
                 send(serv, port, username, password, message)
 
-    commands()
+    handle_command()
 
 
-def print_file_data(user_input):
-    '''
-    Function to print the file data to the screen
-    '''
-    options = user_input.split()[1:]
+def print_data(command):
     global temp_path
+
+    options = command.split()[1:]
+
     profile = Profile()
     profile.load_profile(temp_path)
 
@@ -256,122 +465,8 @@ def print_file_data(user_input):
         print("Posts:")
         for i, post in enumerate(profile._posts):
             print(f"  Post {i}: {post}")
-    commands()
-
-    """
-    Function will print the file data inside the DSU file
-    Will print desired information
-    """
+    handle_command()
 
 
-def create_file(user_input):
-    '''
-    Function to create a file/profile from the person
-    '''
-    global temp_path
-    items = user_input
-    if ADMINISTRATOR:
-        paths = items
-        if len(paths) > 1:
-            path = paths[1]
-            if '-n' in paths:
-                n_index = paths.index('-n')
-                temp = n_index + 1
-                file_title = paths[temp]
-                file_ext = file_title + '.dsu'
-                filepath = Path(path) / file_ext
-                username = input("Enter username: ")
-                password = input("Enter password: ")
-                bio = input("Enter Bio: ")
-                profile = Profile(
-                    username=username, password=password, bio=bio)
-                with open(filepath, 'a') as f:
-                    print("")
-                f = open(filepath, 'a')
-                profile.save_profile(path=filepath)
-                print(f'{filepath} OPENED')
-                temp_path = filepath
-            else:
-                print("[COMMAND] [INPUT] [[-]OPTION] [INPUT] syntax")
-        print(f"PATH TO FILE:  {temp_path}")
-        commands()
-        return temp_path
-    else:
-        if '-n' in items:
-            the_path = get_path()
-            the_name = file_name()
-            line = the_path + "\\" + the_name + ".dsu"
-            username = input("Enter Username:  ")
-            password = input("Enter Password:  ")
-            bio = input("Enter bio: ")
-            profile = Profile(username=username, password=password, bio=bio)
-            print(line + "      CREATED")
-            with open(line, 'a') as f:
-                u = "Username: " + username + '\n'
-                f.write(u)
-                p = "Password: " + password + '\n'
-                f.write(p)
-                b = "Bio: " + bio + '\n'
-                f.write(b)
-            profile.save_profile(path=line)
-            f = open(line, 'a')
-            temp_path = the_path
-        else:
-            print("Must follow: [COMMAND] [[-]OPTION]syntax ")
-    commands()
-    return temp_path
-
-
-def delete_file(file_path):
-    '''
-    Function to delete profile from file list
-    '''
-    suffix = ".dsu"
-    if file_path.endswith(suffix):
-        path = pathlib.Path(file_path)
-        if path.exists():
-            path.unlink()
-            print(f"{file_path} DELETED")
-            commands()
-        else:
-            print(f"File '{file_path}' not found")
-    else:
-        print("File in directory not found")
-
-
-def read_file(user_input):
-    '''
-    Function to read profile contents after it has been opened
-    '''
-    if ADMINISTRATOR:
-        paths = user_input.split(' ')
-        path = paths[1]
-        if path[-3:] == 'dsu':
-            if user.check_file(path):
-                with open(path, 'r') as p:
-                    line = p.readlines()
-                    if len(line) > 0:
-                        for i in line:
-                            print(i, end='')
-                    else:
-                        print("EMPTY")
-            elif not user.check_file(path):
-                print("no such file exists")
-        print("")
-    else:
-        path = get_path()
-        if path[-3:] == 'dsu':
-            if user.check_file(path):
-                with open(path, 'r') as p:
-                    line = p.readlines()
-                    if len(line) > 0:
-                        for i in line:
-                            print(i, end='')
-                    else:
-                        print("EMPTY")
-            elif not user.check_file(path):
-                print("no such file exists")
-        else:
-            print("please enter a file with \".dsu\" extention")
-    print("")
-    commands()
+if __name__ == "__main__":
+    start()

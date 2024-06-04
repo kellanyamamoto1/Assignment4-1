@@ -12,41 +12,63 @@ Modified given file to connect to server
 # kellany@uci.edu
 # 28388886
 
+
+import test_ds_message_protocol
 import json
 import time
 from collections import namedtuple
+timestamp = str(time.time())
+DataTuple = namedtuple('DataTuple', ['type', 'message'])
 
-DataTuple = namedtuple('DataTuple', ['foo', 'baz'])
-TIMESTAMP = str((time.time()))
+
+def json_to_dict(json_msg: str) -> dict:
+    """
+    Convert a JSON message to a dictionary.
+    """
+    try:
+        return json.loads(json_msg)
+    except json.JSONDecodeError:
+        print("Json cannot be decoded.1")
+        return {}
+
+
+def json_to_list(json_msg: str) -> list:
+    """
+    Convert a JSON message to a list.
+    """
+    try:
+        return json.loads(json_msg)
+    except json.JSONDecodeError:
+        print("Json cannot be decoded.2")
+        return []
 
 
 def extract_json(json_msg: str) -> DataTuple:
     '''
-    Call the json.loads function on a json
-    string and convert it to a DataTuple object
+    Call the json.loads function on a
+    json string and convert it to a DataTuple object
     '''
     try:
         json_obj = json.loads(json_msg)
-        foo = json_obj['foo']
-        baz = json_obj['bar']['baz']
+        response = json_obj.get('response', {})
+        if 'type' in response and 'message' in response:
+            return DataTuple(response['type'], response['message'])
     except json.JSONDecodeError:
-        print("Json cannot be decoded.")
+        print("Json cannot be decoded.3")
 
-    return DataTuple(foo, baz)
+    return None
 
 
 def format_for_json(
-        action_type,
+        action,
         username,
         password,
         user_token=None,
         message=None,
-        bio=None):
-    """
-    Formats the JSON file
-    """
+        bio=None,
+        recipient=None):
     formated = None
-    if action_type == "join":
+    if action == "join":
         formated = json.dumps({
             "join": {
                 "username": username,
@@ -54,25 +76,37 @@ def format_for_json(
                 "tokens": user_token
             }
         })
-    elif action_type == 'post':
+    elif action == 'post':
         if not user_token:
-            raise ValueError("no user token")
+            raise ValueError("no user token1")
         formated = ({
             "token": user_token,
             "post": {
                 "entry": message,
-                "timestamp": TIMESTAMP
+                "timestamp": timestamp
             }
         })
-    elif action_type == 'bio':
+    elif action == 'bio':
         if not user_token:
-            raise ValueError("Value Error")
+            raise ValueError("no user token2")
         formated = json.dumps({
             "token": user_token,
             "bio": {
                 "entry": bio,
-                "timestamp": TIMESTAMP
+                "timestamp": timestamp
             }
         })
+    elif action == 'directmessage':
+        if not user_token:
+            raise ValueError("no user token3")
+        if message:
+            formated = json.dumps({
+                "token": user_token,
+                "directmessage": {
+                    "entry": message,
+                    "recipient": recipient,
+                    "timestamp": timestamp
+                }
+            })
 
     return formated
