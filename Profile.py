@@ -133,12 +133,16 @@ class Profile:
         if p.exists() and p.suffix == '.dsu':
             try:
                 f = open(p, 'r')
+                
                 obj = json.load(f)
+                
                 self.username = obj['username']
                 self.password = obj['password']
                 self.dsuserver = obj['dsuserver']
                 self.received_messages = obj['received_messages']
                 self.sent_messages = obj['sent_messages']
+                
+                print(obj)
                 f.close()
             except Exception as ex:
                 raise DsuProfileError(ex)

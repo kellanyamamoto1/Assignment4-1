@@ -31,6 +31,29 @@ class DirectMessenger:
         self.username = username
         self.password = password
 
+    def connect(self):
+        '''
+        Function to Connect
+        '''
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_conn:
+            server_conn.connect((self.dsuserver, port))
+            stuff = {}
+            stuff["join"] = {
+                            "username": 'green1',
+                            "password": 'heheha',
+                            "token": ""
+                        }
+            data_str = json.dumps(stuff)
+            server_conn.sendall(data_str.encode())
+            response = server_conn.recv(3021).decode()
+            response_json = json.loads(response)
+            print(response_json)
+            if "token" in str(response_json):
+                temp = str(response_json).index("token")
+                token = str(response_json)[temp+9:-3]
+                self.token = token
+
+
     def send(self, message: str, recipient: str) -> bool:
         '''
         Function to Send Message
@@ -181,24 +204,3 @@ class DirectMessenger:
         '''
         return self.password
 
-    def connect(self):
-        '''
-        Function to Connect
-        '''
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_conn:
-            server_conn.connect((self.dsuserver, port))
-            stuff = {}
-            stuff["join"] = {
-                            "username": 'green1',
-                            "password": 'heheha',
-                            "token": ""
-                        }
-            data_str = json.dumps(stuff)
-            server_conn.sendall(data_str.encode())
-            response = server_conn.recv(3021).decode()
-            response_json = json.loads(response)
-            print(response_json)
-            if "token" in str(response_json):
-                temp = str(response_json).index("token")
-                token = str(response_json)[temp+9:-3]
-                self.token = token

@@ -30,7 +30,7 @@ def start():
             temp = str(response_json).index("token")
             token = str(response_json)[temp+9:-3]
         mew = DirectMessenger("168.235.86.101", 'green1', 'heheha')
-        person = p.Profile("168.235.86.101", 'green1', 'heheha')
+        person = p.Profile("168.235.86.101", 'help', 'mog')
         currrent_directory = pathlib.Path.cwd()
         path = f"{currrent_directory}\\profile.dsu"
         if not pathlib.Path(path).exists():

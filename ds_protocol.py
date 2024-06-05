@@ -13,7 +13,6 @@ Modified given file to connect to server
 # 28388886
 
 
-import test_ds_message_protocol
 import json
 import time
 from collections import namedtuple
