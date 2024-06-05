@@ -1,18 +1,13 @@
-# Kellan Yamamoto
-# 28388886
-# kellany@uci.edu
-# Modified from given code
 import tkinter as tk
 from tkinter import ttk, filedialog
 from typing import Text
-from ds_messenger import *
-import socket
 import json
-import Profile as prof
-import pathlib
+import socket
 import time
-timestamp = str(time.time())
-
+from ds_messenger import DirectMessenger, DirectMessage
+import Profile as p
+import pathlib
+server = "168.235.86.101"
 
 
 class Body(tk.Frame):
@@ -34,7 +29,7 @@ class Body(tk.Frame):
 
     def node_select(self, event):
         '''
-         Select Node
+        Function to Select Node
         '''
         index = int(self.posts_tree.selection()[0])
         entry = self._contacts[index]
@@ -43,7 +38,7 @@ class Body(tk.Frame):
 
     def insert_contact(self, contact: str):
         '''
-        Instert Function
+        Function to Instert Function
         '''
         self._contacts.append(contact)
         id = len(self._contacts) - 1
@@ -51,7 +46,7 @@ class Body(tk.Frame):
 
     def _insert_contact_tree(self, id, contact: str):
         '''
-        Instert Contact Tree
+        Function to Instert Contact Tree
         '''
         if len(contact) > 25:
             entry = contact[:24] + "..."
@@ -139,14 +134,14 @@ class Footer(tk.Frame):
 
     def send_click(self):
         '''
-        Defines click button action
+        Function defining click button action
         '''
         if self._send_callback is not None:
             self._send_callback()
 
     def check_new_click(self):
         '''
-        Defines New Check Action
+        Function Defining New Check Action
         '''
         if self._check_new_callback is not None:
             self._check_new_callback()
@@ -165,7 +160,7 @@ class Footer(tk.Frame):
 
     def _draw(self):
         '''
-        makes Function that Sets the Gui Variables
+        Draw Function that Sets the Gui Variables
         '''
         save_button = tk.Button(master=self, text="Send",
                                 width=20, command=self.send_click)
@@ -193,7 +188,7 @@ class NewContactDialog(tk.simpledialog.Dialog):
 
     def body(self, frame):
         '''
-        Holds Main Variable assignments
+        Function Holding Main Variable assignments
         '''
         self.server_label = tk.Label(frame, width=30, text="DS Server Address")
         self.server_label.pack()
@@ -229,7 +224,7 @@ class NewContactDialog(tk.simpledialog.Dialog):
 class MainApp(tk.Frame):
     def __init__(self, root):
         '''
-        Initilizes 
+        Initilizes self
         '''
         tk.Frame.__init__(self, root)
         self.root = root
@@ -243,7 +238,7 @@ class MainApp(tk.Frame):
 
     def send_message(self):
         '''
-        Send Messages with Others
+        Function to Send Messages with Others
         '''
         message_txt = self.body.get_text_entry()
         if self.recipient and message_txt and self.direct_messenger:
@@ -259,7 +254,7 @@ class MainApp(tk.Frame):
 
     def add_contact(self):
         '''
-        Add Contact person
+        Function to Add Contact person
         '''
         temp1 = "Add Contact"
         temp2 = "Enter the name of the new contact:"
@@ -269,13 +264,13 @@ class MainApp(tk.Frame):
 
     def recipient_selected(self, recipient):
         '''
-        Select Recipient
+        Function To Select Recipient
         '''
         self.recipient = recipient
 
     def configure_server(self):
         '''
-        Configure Server
+        Function to Configure Server
         '''
         ud = NewContactDialog(self.root, "Configure Account",
                               self.username, self.password, self.server)
@@ -293,7 +288,7 @@ class MainApp(tk.Frame):
 
     def publish(self, message: str):
         '''
-        Publish Message to GUI
+        Function to Publish Message to GUI
         '''
         if "You:" in message:
             self.body.insert_user_message(message)
@@ -302,7 +297,7 @@ class MainApp(tk.Frame):
 
     def check_new(self):
         '''
-        Check New messages
+        Function to Check New messages
         '''
         if self.direct_messenger:
             new_messages = self.direct_messenger.retrieve_new()
@@ -317,7 +312,7 @@ class MainApp(tk.Frame):
 
     def _draw(self):
         '''
-        Draw Function for Gui Variable Sets
+        Draw Function that Sets the Gui Variables
         '''
         menu_bar = tk.Menu(self.root)
         self.root['menu'] = menu_bar
@@ -341,6 +336,7 @@ class MainApp(tk.Frame):
                              send_callback=self.send_message,
                              check_new_callback=self.check_new)
         self.footer.pack(fill=tk.BOTH, side=tk.BOTTOM)
+
 
 
 def begin():

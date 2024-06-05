@@ -402,23 +402,6 @@ def edit_file(a):
             profile.save_profile(temp_path)
         elif "-addpost" in user_in:
             post_content = input("Enter new post: ")
-            if "@W" in post_content or "@w" in post_content:
-                zipc = input("Enter Zipcode: ")
-                cc = input("Enter Country Code: ")
-                Fire = WEA.OpenWeather(zipc, cc)
-                Fire.set_apikey("ceb8cbc931c2f41301ba4a1548020fd4")
-                Fire.load_data()
-                post_content = Fire.transclude(post_content)
-            if "@L" in post_content or "@l" in post_content:
-                alb = input("Enter Album Song Album: ")
-                art = input("Enter Artist: ")
-                Water = LFM.LastFM()
-                Water.set_artist_album(art, alb)
-                Water.setFMapi("7cd2ee13dc3b0100dae94c5c7401df50")
-                Water.loadFMdata()
-                # print(Water.loadFMdata())
-                post_content = Water.transclude(post_content)
-
             new_post = Post(post_content)
             profile.add_post(new_post)
             profile.save_profile(temp_path)

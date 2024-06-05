@@ -59,54 +59,33 @@ def extract_json(json_msg: str) -> DataTuple:
     return None
 
 
-def format_for_json(
-        action,
-        username,
-        password,
-        user_token=None,
-        message=None,
-        bio=None,
-        recipient=None):
+def format_for_json(action_type, user_token=None,
+                    message=None, recipient=None):
+    '''
+    Function to format strings
+    '''
     formated = None
-    if action == "join":
-        formated = json.dumps({
-            "join": {
-                "username": username,
-                "password": password,
-                "tokens": user_token
-            }
-        })
-    elif action == 'post':
-        if not user_token:
-            raise ValueError("no user token1")
+    if action_type == "1":
         formated = ({
-            "token": user_token,
-            "post": {
-                "entry": message,
-                "timestamp": timestamp
-            }
-        })
-    elif action == 'bio':
-        if not user_token:
-            raise ValueError("no user token2")
-        formated = json.dumps({
-            "token": user_token,
-            "bio": {
-                "entry": bio,
-                "timestamp": timestamp
-            }
-        })
-    elif action == 'directmessage':
-        if not user_token:
-            raise ValueError("no user token3")
-        if message:
-            formated = json.dumps({
                 "token": user_token,
                 "directmessage": {
                     "entry": message,
                     "recipient": recipient,
-                    "timestamp": timestamp
+                    'timestamp': timestamp
                 }
-            })
-
+                })
+    elif action_type == '2':
+        if not user_token:
+            raise ValueError("no user token breh go get that shi")
+        formated = ({
+                "token": user_token,
+                "directmessage": 'new'
+                })
+    elif action_type == '3':
+        if not user_token:
+            raise ValueError("go get it bruh bruh")
+        formated = ({
+                "token": user_token,
+                "directmessage": 'all'
+                })
     return formated
