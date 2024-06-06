@@ -1,3 +1,7 @@
+'''
+Test for format of ds_protocol
+'''
+
 # Kellan Yamamoto
 # 28388886
 # kellany@uci.edu
@@ -13,5 +17,5 @@ print(format_for_send)
 format_for_retreive_new = format_for_json('2', '11010101010101010110')
 print(format_for_retreive_new)
 
-format_for_retreive_all = format_for_json('3', '11010101010101010110')
+format_for_retreive_all = format_for_json('3', '121212121212')
 print(format_for_retreive_all)

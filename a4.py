@@ -4,22 +4,15 @@ user, and trigger the UI
 """
 # a4.py
 
-# Starter code for assignment 4 in ICS 32 Programming with Software Libraries in Python
+# Starter code for assignment 4 in ICS 32
+# Programming with Software Libraries in Python
 
 # Kellan Yamamoto
 # kellany@uci.edu
 # 28388886
 
-
-import admin
 import ds_client
-import ds_protocol
-import ui as ui
-import ds_messenger
-import Profile as prof
-import test_ds_messenger
 import interface
-import user
 
 # PATH: C:\Users\kella\OneDrive\Desktop\ICS32Again\Assignment3
 # E -usr "mark b" -pwd "password123" -bio "test bio"

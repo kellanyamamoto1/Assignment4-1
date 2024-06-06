@@ -8,6 +8,7 @@ timestamp = str(time.time())
 Ds Messenger Modules
 '''
 
+
 class DirectMessage:
     '''
     Direct Message Class
@@ -52,7 +53,6 @@ class DirectMessenger:
                 temp = str(response_json).index("token")
                 token = str(response_json)[temp+9:-3]
                 self.token = token
-
 
     def send(self, message: str, recipient: str) -> bool:
         '''
@@ -203,4 +203,3 @@ class DirectMessenger:
         Function return pass
         '''
         return self.password
-

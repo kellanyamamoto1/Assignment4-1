@@ -1,12 +1,11 @@
+'''
+GUI file for messenger
+'''
+
 import tkinter as tk
-from tkinter import ttk, filedialog
-from typing import Text
-import json
-import socket
-import time
-from ds_messenger import DirectMessenger, DirectMessage
+from tkinter import ttk
+from ds_messenger import DirectMessenger
 import Profile as p
-import pathlib
 server = "168.235.86.101"
 
 
@@ -119,6 +118,9 @@ class Body(tk.Frame):
 
 
 class Footer(tk.Frame):
+    '''
+    Footer for GUI
+    '''
     def __init__(self, root, send_callback=None, check_new_callback=None):
         '''
         Initilizes self
@@ -176,6 +178,9 @@ class Footer(tk.Frame):
 
 
 class NewContactDialog(tk.simpledialog.Dialog):
+    '''
+    New Contact feature
+    '''
     def __init__(self, root, title=None, user=None, pwd=None, server=None):
         '''
         Initilizes self
@@ -222,6 +227,9 @@ class NewContactDialog(tk.simpledialog.Dialog):
 
 
 class MainApp(tk.Frame):
+    '''
+    Full app for GUI
+    '''
     def __init__(self, root):
         '''
         Initilizes self
@@ -336,7 +344,6 @@ class MainApp(tk.Frame):
                              send_callback=self.send_message,
                              check_new_callback=self.check_new)
         self.footer.pack(fill=tk.BOTH, side=tk.BOTTOM)
-
 
 
 def begin():

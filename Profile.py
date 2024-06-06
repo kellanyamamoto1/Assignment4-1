@@ -1,3 +1,7 @@
+'''
+Profile module - changed to work with new server stuff
+'''
+
 import json
 import time
 from pathlib import Path
@@ -8,7 +12,6 @@ DsuFileError is a custom exception handler
 that you should catch in your own code. It
 is raised when attempting to load or save
 Profile objects to file the system.
-
 """
 
 
@@ -21,11 +24,13 @@ DsuProfileError is a custom exception handler
 that you should catch in your own code. It
 is raised when attempting to deserialize a
 dsu file to a Profile object.
-
 """
 
 
 class DsuProfileError(Exception):
+    '''
+    DW abt it
+    '''
     pass
 
 
@@ -40,6 +45,9 @@ class Post(dict):
 
     """
     def __init__(self, entry: str = None, timestamp: float = 0):
+        '''
+        Init post
+        '''
         self._timestamp = timestamp
         self.set_entry(entry)
 
@@ -48,6 +56,9 @@ class Post(dict):
         dict.__init__(self, entry=self._entry, timestamp=self._timestamp)
 
     def set_entry(self, entry):
+        '''
+        sets entry for stuff
+        '''
         self._entry = entry
         dict.__setitem__(self, 'entry', entry)
 
@@ -56,9 +67,15 @@ class Post(dict):
             self._timestamp = time.time()
 
     def get_entry(self):
+        '''
+        retreives entry
+        '''
         return self._entry
 
     def set_time(self, time: float):
+        '''
+        Sets time for the string
+        '''
         self._timestamp = time
         dict.__setitem__(self, 'timestamp', time)
 
@@ -79,8 +96,13 @@ class Post(dict):
 
 
 class Profile:
-
+    '''
+    Profile class be like
+    '''
     def __init__(self, dsuserver=None, username=None, password=None, ):
+        '''
+        initalize class
+        '''
         self.dsuserver = dsuserver  # REQUIRED
         self.username = username  # REQUIRED
         self.password = password  # REQUIRED
@@ -88,27 +110,48 @@ class Profile:
         self.sent_messages = []
 
     def del_messages(self):
+        '''
+        Delete Messages
+        '''
         self.received_messages.clear()
 
     def save_messages(self, dict1):
+        '''
+        Save Messages
+        '''
         for i in dict1:
             self.received_messages.append(i)
 
     def load_messages(self):
+        '''
+        Load Messages
+        '''
         for i in self.received_messages:
             print(i)
 
     def save_sent(self, message):
+        '''
+        Save Sent
+        '''
         self.sent_messages.append(message)
 
     def load_sent(self):
+        '''
+        Load Sent
+        '''
         for i in self.sent_messages:
             print(i)
 
     def del_sent(self):
+        '''
+        Delete Sent
+        '''
         self.sent_messages.clear()
 
     def save_profile(self, path: str) -> None:
+        '''
+        Save Profile
+        '''
         p = Path(path)
         if p.exists() and p.suffix == '.dsu':
             try:
@@ -133,15 +176,12 @@ class Profile:
         if p.exists() and p.suffix == '.dsu':
             try:
                 f = open(p, 'r')
-                
                 obj = json.load(f)
-                
                 self.username = obj['username']
                 self.password = obj['password']
                 self.dsuserver = obj['dsuserver']
                 self.received_messages = obj['received_messages']
                 self.sent_messages = obj['sent_messages']
-                
                 print(obj)
                 f.close()
             except Exception as ex:
