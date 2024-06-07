@@ -1,3 +1,11 @@
+'''
+Messenger functionality
+'''
+
+# Kellan Yamamoto
+# kellany@uci.edu
+# 28388886
+
 import socket
 import time
 import json
@@ -133,7 +141,8 @@ class DirectMessenger:
                             msg_object.message = msg['message']
                             msg_object.timestamp = msg['timestamp']
                             new_messages.append(msg_object)
-                        print("Messages appended to list:", self.new_messages, file=sys.stdout)  # Debugging line
+                        print("Messages appended to list:", self.new_messages,
+                              file=sys.stdout)
                     else:
                         error_message = response_json["response"]["message"]
                         print("Error:", error_message)

@@ -2,12 +2,14 @@
 GUI file for messenger
 '''
 
+# Kellan Yamamoto
+# kellany@uci.edu
+# 28388886
+
 import tkinter as tk
 from tkinter import ttk, filedialog
 from typing import Text
 from ds_messenger import *
-import socket
-import json
 import Profile as prof
 import pathlib
 import time
@@ -352,6 +354,9 @@ class MainApp(tk.Frame):
 
 
 def begin():
+    '''
+    beginning the drawing
+    '''
     # All Tkinter programs start with a root window. We will name ours 'main'.
     main = tk.Tk()
 

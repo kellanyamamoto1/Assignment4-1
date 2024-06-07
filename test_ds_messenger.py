@@ -1,3 +1,10 @@
+'''
+Test Module for entire program
+'''
+
+# Kellan Yamamoto
+# kellany@uci.edu
+# 28388886
 
 import ds_protocol
 import socket
@@ -12,6 +19,9 @@ timestamp = str(time.time())
 
 
 def work():
+    '''
+    main function to test if it works
+    '''
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_conn:
         server_conn.connect((server, port))
         stuff = {}

@@ -11,6 +11,9 @@ from ds_protocol import format_for_json
 
 
 def test_format_for_retrieve_new():
+    '''
+    pytest for formats
+    '''
     result = format_for_json('2', '11010101010101010110')
     expected = {
         'token': '11010101010101010110',
@@ -19,6 +22,9 @@ def test_format_for_retrieve_new():
     assert result == expected, f"Expected {expected}, but got {result}"
 
 def test_format_for_retrieve_all():
+    '''
+    pytest for formats
+    '''
     result = format_for_json('3', '121212121212')
     expected = {
         'token': '121212121212',
