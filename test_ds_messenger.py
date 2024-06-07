@@ -6,6 +6,7 @@ Test Module for entire program
 # kellany@uci.edu
 # 28388886
 
+import interface
 import ds_protocol
 import socket
 import json
@@ -26,9 +27,9 @@ def work():
         server_conn.connect((server, port))
         stuff = {}
         stuff["join"] = {
-            "username": "cap",
-            "password": "pog",
-            "token": ""
+            "username": "kell2",
+            "password": "bruh",
+            "token": "bcd9e0b4-aa55-4fe1-b7bd-f0332788cff9"
         }
         print("joined")
         data_str = json.dumps(stuff)
@@ -57,7 +58,7 @@ def work():
             password=password)
         womp.token = token
         person.save_messages(womp.retrieve_all_string())
-        womp.send("test i hate this shit som ttt", "green1")
+        womp.send("hi love cs so much", "green1")
         person.save_sent(womp.send_format("i love cs so much ggggg", 'green1'))
         person.load_sent()
         print('\n')
@@ -66,6 +67,7 @@ def work():
         womp.retrieve_all()
         print('\n')
         womp.retrieve_new()
+        interface.begin()
 
         # delete messages in dsu
         # person.del_messages()

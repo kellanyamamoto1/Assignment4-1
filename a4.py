@@ -19,7 +19,9 @@ import interface
 
 if __name__ == "__main__":
     # token: 1269c913-8909-49ce-8f8f-f510140fcda9
-    # token 2: 8a0750d9-92ff-4946-a4bc-5e3d75e7baff
-    ds_client.send("168.235.86.101", 3021, "green1", "hehe", "fn")
+    # token 2: bcd9e0b4-aa55-4fe1-b7bd-f0332788cff9
+
+    # 497027b0-4040-4e7b-b7e3-8e7b0ab2d403
+    ds_client.send("168.235.86.101", 3021, "green1", "heheha", "fn")
     # ui.start()
     interface.begin()
