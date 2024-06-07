@@ -3,9 +3,15 @@ GUI file for messenger
 '''
 
 import tkinter as tk
-from tkinter import ttk
-from ds_messenger import DirectMessenger
-import Profile as p
+from tkinter import ttk, filedialog
+from typing import Text
+from ds_messenger import *
+import socket
+import json
+import Profile as prof
+import pathlib
+import time
+timestamp = str(time.time())
 server = "168.235.86.101"
 
 

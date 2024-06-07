@@ -1,4 +1,5 @@
 
+import ds_protocol
 import socket
 import json
 import time
@@ -44,14 +45,14 @@ def work():
             dsuserver=server,
             username=username,
             password=password)
-        print(usernm)
         womp.token = token
         person.save_messages(womp.retrieve_all_string())
-        womp.send("bbbmans", "green1")
-        person.save_sent(womp.send_format("hi", 'green1'))
+        womp.send("test whats up 12", "green1")
+        person.save_sent(womp.send_format("hi bruh", 'green1'))
         person.load_sent()
         person.save_profile(path)
         womp.retrieve_all()
+        print('\n')
         womp.retrieve_new()
 
         # delete messages in dsu
