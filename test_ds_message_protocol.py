@@ -6,16 +6,25 @@ Test for format of ds_protocol
 # 28388886
 # kellany@uci.edu
 
+import pytest
 from ds_protocol import format_for_json
-'''
-Module that tests ds_protocol
-'''
 
-format_for_send = format_for_json('1', "100101019101910")
-print(format_for_send)
 
-format_for_retreive_new = format_for_json('2', '11010101010101010110')
-print(format_for_retreive_new)
+def test_format_for_retrieve_new():
+    result = format_for_json('2', '11010101010101010110')
+    expected = {
+        'token': '11010101010101010110',
+        'directmessage': 'new'
+    }
+    assert result == expected, f"Expected {expected}, but got {result}"
 
-format_for_retreive_all = format_for_json('3', '121212121212')
-print(format_for_retreive_all)
+def test_format_for_retrieve_all():
+    result = format_for_json('3', '121212121212')
+    expected = {
+        'token': '121212121212',
+        'directmessage': 'all'
+    }
+    assert result == expected, f"Expected {expected}, but got {result}"
+
+if __name__ == "__main__":
+    pytest.main()
