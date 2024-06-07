@@ -1,6 +1,7 @@
 import socket
 import time
 import json
+import sys
 from ds_protocol import format_for_json
 port = 3021
 timestamp = str(time.time())
@@ -31,6 +32,8 @@ class DirectMessenger:
         self.dsuserver = dsuserver
         self.username = username
         self.password = password
+        self.all_messages = []
+        self.new_messages = []
 
     def connect(self):
         '''
@@ -101,7 +104,7 @@ class DirectMessenger:
         '''
         Function to retrieve new messages
         '''
-        messages = []
+        new_messages = []
         if self.token is None:
             self.connect()
 
@@ -123,14 +126,14 @@ class DirectMessenger:
                 if "response" in response_json:
                     if response_json["response"]["type"] == "ok":
                         msg_list = response_json['response']['messages']
-                        print("Message list:", msg_list)  # Debugging line
+                        print("Message list:", new_messages)  # Debugging line
                         for msg in msg_list:
                             msg_object = DirectMessage()
                             msg_object.recipient = msg['from']
                             msg_object.message = msg['message']
                             msg_object.timestamp = msg['timestamp']
-                            messages.append(msg_object)
-                        print("Messages appended to list:", messages)  # Debugging line
+                            new_messages.append(msg_object)
+                        print("Messages appended to list:", self.new_messages, file=sys.stdout)  # Debugging line
                     else:
                         error_message = response_json["response"]["message"]
                         print("Error:", error_message)
@@ -144,13 +147,13 @@ class DirectMessenger:
         except Exception as e:
             print("Unexpected error:", e)
 
-        return messages
+        return new_messages
 
     def retrieve_all(self) -> list:
         '''
         Function retrieve all messages
         '''
-        messages = []
+        direct_messages = []
         if self.token is None:
             self.connect()
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_conn:
@@ -165,18 +168,13 @@ class DirectMessenger:
                 if response_json["response"]["type"] == "ok":
                     msg_list = response_json['response']['messages']
                     for msg in msg_list:
-                        msg_object = DirectMessage()
-                        msg_object.recipient = msg['from']
-                        msg_object.message = msg['message']
-                        msg_object.timestamp = msg['timestamp']
-                        messages.append(msg_object)
-
+                        direct_messages.append(msg['directmessage'])
                 else:
                     error_message = response_json["response"]["message"]
                     print("Error:", error_message)
             else:
                 print("Invalid response from server")
-        return messages
+        return direct_messages
 
     def retrieve_all_string(self) -> list:
         '''

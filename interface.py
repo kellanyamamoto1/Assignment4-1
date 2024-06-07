@@ -256,10 +256,9 @@ class MainApp(tk.Frame):
         '''
         message_txt = self.body.get_text_entry()
         if self.recipient and message_txt and self.direct_messenger:
-            print("i got here")
             send_bool = self.direct_messenger.send(message=message_txt,
                                                    recipient=self.recipient)
-            print("grapes")
+            print("\nMessage sent\n")
             if send_bool:
                 self.publish(f"You: {message_txt}")
             else:

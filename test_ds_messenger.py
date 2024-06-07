@@ -29,8 +29,8 @@ def work():
         if "token" in str(response_json):
             temp = str(response_json).index("token")
             token = str(response_json)[temp + 9:-3]
-        womp = DirectMessenger("168.235.86.101", "cap", "pog")
-        person = prof.Profile("168.235.86.101", 'cap', 'pog')
+        womp = DirectMessenger("168.235.86.101", "green", "heheha")
+        person = prof.Profile("168.235.86.101", 'green1', 'hehehha')
         currrent_dir = pathlib.Path.cwd()
         path = f"{currrent_dir}\\profile.dsu"
         # message =input()
@@ -47,10 +47,12 @@ def work():
             password=password)
         womp.token = token
         person.save_messages(womp.retrieve_all_string())
-        womp.send("test whats up 12", "green1")
-        person.save_sent(womp.send_format("hi bruh", 'green1'))
+        womp.send("test i hate this shit som ttt", "green1")
+        person.save_sent(womp.send_format("i love cs so much ggggg", 'green1'))
         person.load_sent()
+        print('\n')
         person.save_profile(path)
+        print("\n")
         womp.retrieve_all()
         print('\n')
         womp.retrieve_new()
